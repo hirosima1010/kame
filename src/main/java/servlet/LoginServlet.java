@@ -38,8 +38,14 @@ public class LoginServlet extends HttpServlet {
 	        // 「箱」をまるごとセッションに保存する
 	        session.setAttribute("loginuser", loginUser);
 	        
-	        // メイン画面に飛ばす
-	        response.sendRedirect("main.jsp");
+	        if ("admin".equals(loginUser.getRole())) {
+	        	// 管理者なら管理者用ページへ
+	        	response.sendRedirect("admin_main.jsp");
+	        } else {
+	        	// それ以外ならスタッフ用ページへ
+	        	response.sendRedirect("staff_main.jsp");
+	        }
+	        
 	    } else {
 	        // ログイン失敗
 	        request.setAttribute("error", "IDまたはパスワードが違います");
