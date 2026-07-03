@@ -1,0 +1,426 @@
+@charset "UTF-8";
+
+/* ==========================================================================
+   🌿 サードウェーブ・カフェスタイル 高級モダンCSS
+   ========================================================================== */
+
+/* 1. ベースデザイン（ナチュラル＆クリア） */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #faf8f5; /* 絹のような上質な生成り色 */
+    color: #2b221e; /* 焙煎された上質なコーヒーブラウン */
+    margin: 0;
+    padding: 60px 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 2. 看板（タイトル） */
+h1 {
+    font-family: 'Cinzel', 'Didot', 'Hiragino Mincho ProN', serif;
+    font-size: 32px;
+    font-weight: 300;
+    text-align: center;
+    letter-spacing: 0.15em;
+    color: #1a110e;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: #4a3b32;
+    margin-top: 60px;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e6dfd5;
+}
+
+/* 3. メッセージボックス（無駄を削ぎ落としたスタイリッシュ通知） */
+.status-msg, .error-msg {
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+.status-msg {
+    background-color: #edf5f1;
+    color: #286043;
+    border: 1px solid #d3e5dc;
+}
+.error-msg {
+    background-color: #fbf2f2;
+    color: #a63a3a;
+    border: 1px solid #f2dadb;
+}
+
+/* 4. 完璧に整列するフォームエリア */
+.form-section {
+    background: #ffffff;
+    padding: 40px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    border: 1px solid #e6dfd5;
+    box-shadow: 0 4px 20px rgba(74, 59, 50, 0.02);
+}
+
+.form-section h3 {
+    margin-top: 0;
+    margin-bottom: 35px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #8c7667;
+}
+
+.required {
+    font-size: 10px;
+    background: #a63a3a;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+/* 💡 ここが縦ラインを1ミリ単位で綺麗に揃えるフレックス設定 */
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    width: 200px; /* ラベルの幅を完全に固定 */
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a3b32;
+    letter-spacing: 0.05em;
+}
+
+/* スマートなインプット形状 */
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group input[type="date"],
+.form-group select {
+    flex: 1; /* 残りの横幅を綺麗に埋める */
+    max-width: 400px; /* 広がりすぎない上品な幅 */
+    padding: 12px 16px;
+    border: 1px solid #dcd3c4;
+    border-radius: 6px;
+    background-color: #faf9f6;
+    color: #2b221e;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #8c7667;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(140, 118, 103, 0.1);
+}
+
+.w-full {
+    max-width: 100% !important; /* 住所などは広めに確保 */
+}
+
+.readonly-field {
+    background-color: #f0ebe1 !important;
+    color: #8c8275;
+    cursor: not-allowed;
+}
+
+.info-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2b221e;
+}
+
+/* 5. ボタン（洗練されたフラットモダン） */
+.btn-submit {
+    background-color: #2b221e;
+    color: #ffffff;
+    padding: 15px 60px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(43, 34, 30, 0.15);
+}
+
+.btn-submit:hover {
+    background-color: #4a3b32;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(43, 34, 30, 0.25);
+}
+
+.text-center { text-align: center; }
+
+/* 詳細画面用のボタンレイアウト */
+.btn-container {
+    text-align: center;
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn-back-link {
+    font-size: 14px;
+    color: #8c7667;
+    border-bottom: 1px solid #8c7667;
+    padding-bottom: 2px;
+}
+
+/* 6. 高級ホテルのメニュー表のような美しいテーブル */
+.table-container {
+    overflow-x: auto;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e6dfd5;
+    box-shadow: 0 4px 20px rgba(74, 59, 50, 0.02);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 18px 24px;
+    text-align: left;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+}
+
+th {
+    background-color: #f5ede2; /* 優しいミルクティー色 */
+    color: #4a3b32;
+    font-weight: 600;
+    border-bottom: 1px solid #e6dfd5;
+}
+
+td {
+    border-bottom: 1px solid #f7f4f0;
+    color: #3e2723;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: #faf9f6;
+}
+
+.badge-id {
+    font-family: monospace;
+    background-color: #f0ebe1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #5d483a;
+}
+
+.font-bold { font-weight: 600; }
+.price { font-weight: 600; color: #8c7667; }
+.text-muted { text-align: center; color: #8c8275; padding: 30px; }
+
+/* アクションボタンのモダン化 */
+.actions {
+    display: flex;
+    gap: 12px;
+}
+.link-edit, .link-delete, .link-restore {
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+.link-edit {
+    background-color: #f5ede2;
+    color: #5d483a;
+}
+.link-edit:hover { background-color: #ebdcc8; }
+
+.link-delete {
+    background-color: #fff0f0;
+    color: #a63a3a !important;
+}
+.link-delete:hover { background-color: #ffd9d9; }
+
+/* 7. 退職者用クラシックグレーテーブル */
+.inactive-table th {
+    background-color: #ebdcd0;
+    color: #5d534c;
+}
+.inactive-table td {
+    color: #8c8275;
+}
+.link-restore {
+    background-color: #edf5f1;
+    color: #286043;
+}
+.link-restore:hover { background-color: #d8ebd3; }
+
+/* その他要素 */
+hr {
+    border: none;
+    height: 1px;
+    background-color: #e6dfd5;
+    margin: 50px 0;
+}
+
+.footer-nav {
+    margin-top: 40px;
+    text-align: center;
+}
+.btn-back {
+    color: #8c7667;
+    font-size: 14px;
+    border: none;
+}
+/* ==========================================================================
+   カメバックス管理画面テーブル崩れ防止カスタム設定（完全中央整列・極上版）
+   ========================================================================== */
+
+/* 1. テーブルの基本設定（無理な幅固定を解除し、自然で頑丈な幅へ） */
+.table-container table {
+    width: 100% !important;
+    table-layout: auto !important; /* 自動計算に戻し、ブラウザに綺麗に広げさせます */
+    border-collapse: collapse !important;
+}
+
+/* 2. すべてのセルを「上下中央揃え」に徹底統一 */
+.table-container th, 
+.table-container td {
+    padding: 14px 16px !important; /* 窮屈にならない上質な余白 */
+    vertical-align: middle !important; /* すべての要素を上下のド真ん中に揃える */
+    box-sizing: border-box !important;
+}
+
+/* 3. ヘッダー（見出し）の見栄えと整列 */
+.table-container th {
+    font-weight: bold !important;
+    text-align: center !important; /* 基本はすべて中央揃え */
+    background-color: #f5ede2 !important;
+    border-bottom: 2px solid #e6dfd5 !important;
+    white-space: nowrap !important;
+}
+/* メニュー名エリアの見出しだけは、左のラインをデータと揃える */
+.table-container th.col-name {
+    text-align: left !important;
+}
+
+/* 4. 各データセルの配置ルール */
+.table-container td {
+    white-space: nowrap !important; /* 基本の列は絶対に勝手に折り返させない */
+}
+
+/* ID・アレルギー・ステータス：水平方向も中央揃え */
+.table-container td:nth-child(1), /* ID */
+.table-container td.allergy-cell, 
+.table-container td.status-cell {
+    text-align: center !important;
+}
+
+/* カテゴリ（バッジを綺麗に中央配置） */
+.table-container td:nth-child(2) {
+    text-align: center !important;
+}
+.badge-role {
+    display: inline-block !important;
+    width: 105px !important; /* すべてのバッジの横幅を美しく統一 */
+    text-align: center !important;
+    padding: 5px 0 !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+}
+
+/* 5. 最重要：メニュー名エリア（名前＋おすすめラベル＋下段フリガナ） */
+.table-container td.menu-name-cell {
+    text-align: left !important;
+    white-space: normal !important; /* ここだけは自然な改行を許可 */
+    line-height: 1.5 !important;
+    min-width: 280px !important; /* 文字が詰まりすぎないよう最低幅をキープ */
+}
+.menu-title-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+.menu-main-name {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    color: #2b221e !important;
+}
+.menu-kana-name {
+    font-size: 11px !important;
+    color: #8c8275 !important;
+    display: block !important;
+    margin-top: 3px !important;
+}
+
+/* おすすめ・限定ラベル */
+.label-recommend, .label-limited {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    display: inline-block !important;
+    white-space: nowrap !important;
+}
+
+/* 価格（お金の数字は右揃えが日本の基本） */
+.price-cell {
+    text-align: right !important;
+    font-weight: bold !important;
+    color: #4a3b32 !important;
+    padding-right: 20px !important;
+}
+
+/* 6. 最重要：右端のアクションボタン（詳細・編集、削除） */
+.table-container td.actions {
+    text-align: center !important;
+    white-space: nowrap !important; /* 絶対にボタンを2行に割らせない */
+    display: table-cell !important; /* flexを解除し、テーブル本来のセンタリング機能を活かす */
+}
+
+.link-edit, .link-delete {
+    display: inline-block !important;
+    width: 75px !important; /* 2つのボタンの横幅をミリ単位で完全に一致させる */
+    text-align: center !important;
+    font-size: 12px !important;
+    padding: 6px 0 !important;
+    margin: 0 4px !important; /* ボタン同士の間に美しい間隔をあける */
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    vertical-align: middle !important;
+}

@@ -1,0 +1,473 @@
+@charset "UTF-8";
+
+/* カメが背景をのんびり泳ぐアニメーション */
+    @keyframes swim {
+        0% { background-position: 0 0, 30px 30px, 0 0; }
+        100% { background-position: 100px 50px, 130px 80px, -50px 100px; }
+    }
+
+    /* 隠しコマンド用：爆速アニメーション */
+    @keyframes fast-swim {
+        0% { background-position: 0 0, 30px 30px, 0 0; }
+        100% { background-position: 500px 250px, 530px 280px, -250px 500px; }
+    }
+
+    /* 💡 機能5：水中でゆらゆら揺れるアニメーション */
+    @keyframes water-wave {
+        0% { transform: translateY(0) skewX(0deg); }
+        50% { transform: translateY(-4px) skewX(1deg); }
+        100% { transform: translateY(0) skewX(0deg); }
+    }
+
+    /* 全体のベース */
+    body {
+        font-family: 'Montserrat', 'Noto Sans JP', sans-serif;
+        color: #212529;
+        margin: 0;
+        padding: 40px 20px 180px 20px; 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        background-color: #eef5f0; 
+        background-image: radial-gradient(rgba(0, 112, 74, 0.04) 20%, transparent 20%),
+                          radial-gradient(rgba(0, 112, 74, 0.04) 20%, transparent 20%);
+        background-size: 60px 60px;
+        position: relative;
+        animation: swim 20s linear infinite; 
+        
+        /* マウスカーソルをカメに変更 */
+        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='24'>🐢</text></svg>"), auto;
+    }
+
+    /* 隠しコマンド発動時 */
+    body.turbo-kame {
+        animation: fast-swim 2s linear infinite !important;
+        background-color: #d4ebd9;
+    }
+    body.turbo-kame::before {
+        animation: fast-swim 3s linear infinite !important;
+        opacity: 0.2;
+    }
+
+    /* 背景のカメ絵文字 */
+    body::before {
+        content: "🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢";
+        font-size: 28px;
+        opacity: 0.09; 
+        position: fixed;
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%;
+        z-index: -2; 
+        word-wrap: break-word;
+        letter-spacing: 40px;
+        line-height: 70px;
+        padding: 20px;
+        pointer-events: none;
+    }
+
+    /* 💡 機能5：海中浸水レイヤー（z-indexを下げて、文字の後ろに配置して視認性確保！） */
+    .sea-water {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0vh; /* JSで変更 */
+        background: linear-gradient(to top, rgba(0, 119, 182, 0.35) 0%, rgba(0, 180, 216, 0.15) 80%, transparent 100%);
+        backdrop-filter: blur(1px);
+        z-index: -1; /* コンテナやテキストの背景として機能させる */
+        pointer-events: none;
+        transition: height 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    /* 💡 海中モード時、水没する下部コンテンツの視認性を上げるための白エフェクト */
+    body.sea-active .receipt-section,
+    body.sea-active #sec_goods,
+    body.sea-active #sec_secret {
+        text-shadow: 1px 1px 3px #ffffff, -1px -1px 3px #ffffff, 1px -1px 3px #ffffff, -1px 1px 3px #ffffff;
+    }
+
+    /* 架空の広告枠 */
+    .kame-ad {
+        position: fixed;
+        top: 100px;
+        width: 160px;
+        background: #ffffff;
+        border: 2px solid #00704A;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        text-align: center;
+        box-sizing: border-box;
+        z-index: 10;
+    }
+    .kame-ad-left { left: 40px; }
+    .kame-ad-right { right: 40px; border-color: #0b5ed7; } 
+    .ad-tag { font-size: 10px; color: #adb5bd; display: block; text-align: left; margin-bottom: 5px; }
+    .ad-title { font-size: 14px; font-weight: 700; color: #2b8a3e; margin: 5px 0; }
+    .ad-title-blue { color: #0b5ed7; }
+    .ad-desc { font-size: 11px; color: #495057; line-height: 1.4; }
+    .ad-btn { display: inline-block; margin-top: 10px; background: #00704A; color: #fff; font-size: 11px; padding: 4px 10px; border-radius: 20px; text-decoration: none; font-weight: bold; }
+    .ad-btn-blue { background: #0b5ed7; }
+
+    @media (max-width: 1000px) {
+        .kame-ad { display: none; }
+    }
+
+    /* コンテナ */
+    .container {
+        background: rgba(255, 255, 255, 0.97); 
+        padding: 45px 40px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 112, 74, 0.1); 
+        max-width: 650px;
+        width: 100%;
+        box-sizing: border-box;
+        position: relative; 
+        border: 2px solid #00704A; 
+    }
+
+    .container::after {
+        content: "🐢";
+        position: absolute;
+        font-size: 24px;
+        bottom: -15px;
+        right: -15px;
+        transform: rotate(-30deg);
+    }
+    .container-kame-left {
+        position: absolute;
+        font-size: 24px;
+        top: -15px;
+        left: -15px;
+        transform: rotate(15deg);
+    }
+
+    /* ヘッダー */
+    h1 {
+        font-size: 28px;
+        color: #00704A; 
+        margin-top: 0;
+        margin-bottom: 8px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 2px;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    /* カテゴリー見出し */
+    .category-section {
+        margin-top: 40px;
+        margin-bottom: 15px;
+    }
+    .category-title {
+        font-size: 18px;
+        color: #fff;
+        background-color: #00704A;
+        padding: 8px 16px;
+        border-radius: 4px;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 1px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user-info {
+        font-size: 13px;
+        color: #6c757d;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    /* 時計とつぶやき */
+    .live-clock-wrapper {
+        margin-top: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+    .kame-clock {
+        background-color: #f1f3f5;
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        color: #00704A;
+        border: 1px solid #e2e8f0;
+    }
+    .kame-talk {
+        font-size: 11px;
+        color: #868e96;
+        font-style: italic;
+    }
+
+    /* テーブル */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+    }
+    th {
+        border-bottom: 2px solid #00704A;
+        color: #00704A;
+        padding: 12px 8px;
+        font-weight: 700;
+        text-align: left;
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+    td {
+        padding: 14px 8px;
+        border-bottom: 1px solid #e9ecef;
+        color: #212529;
+        font-size: 14px;
+    }
+    tr:hover td {
+        background-color: #f2f7f4; 
+    }
+
+    /* 数量入力とミニボタン */
+    .qty-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+    .btn-step {
+        background: #e2e8f0;
+        border: 1px solid #cbd5e1;
+        color: #475569;
+        border-radius: 4px;
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .btn-step:hover { background: #cbd5e1; }
+    
+    input[type="number"] {
+        width: 45px;
+        padding: 4px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        text-align: center;
+        outline: none;
+    }
+
+    /* カスタム・領収書セクション */
+    .receipt-section {
+        background-color: #f8f9fa;
+        border: 1px dashed #00704A;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 40px;
+        margin-bottom: 25px;
+        transition: text-shadow 0.3s;
+    }
+    .receipt-title, .eco-title {
+        font-size: 13px;
+        font-weight: bold;
+        color: #00704A;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .receipt-input-group {
+        display: none;
+        margin-top: 10px;
+    }
+    .receipt-input-group input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 13px;
+    }
+    .eco-section {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed #ced4da;
+    }
+    .style-section {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed #ced4da;
+        font-size: 13px;
+        font-weight: bold;
+        color: #00704A;
+    }
+
+    /* 注文ボタン */
+    .btn-submit {
+        display: block;
+        width: 100%;
+        background-color: #00704A;
+        color: #ffffff;
+        border: none;
+        padding: 16px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+        letter-spacing: 1px;
+    }
+    .btn-submit:hover { background-color: #00593b; }
+    .btn-submit:active { transform: scale(0.98); }
+
+    /* 戻るリンク */
+    .back-link {
+        display: inline-block;
+        margin-top: 24px;
+        color: #00704A;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .back-link:hover { text-decoration: underline; }
+    .back-link .egg::before { content: "🥚"; }
+    .back-link:hover .egg::before { content: "🐢"; }
+    .footer-nav { text-align: center; }
+
+    /* リアルタイム合計金額バー */
+    .kame-summary-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 112, 74, 0.95);
+        color: white;
+        padding: 15px 20px;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        z-index: 100;
+        box-sizing: border-box;
+        backdrop-filter: blur(5px);
+        transition: background 0.5s;
+    }
+    
+    /* 💡 機能5：海中モード時にバー自体を少し濃い青にし、白文字を引き立てて揺らす */
+    .kame-summary-bar.in-sea {
+        background: rgba(0, 90, 140, 0.95) !important;
+        animation: water-wave 3s ease-in-out infinite;
+        box-shadow: 0 -4px 20px rgba(0, 119, 182, 0.4);
+    }
+
+    .summary-main-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    .summary-item { font-size: 15px; font-weight: 500; }
+    .summary-price { font-size: 22px; font-weight: 700; font-family: 'Montserrat', sans-serif; color: #fff; border-bottom: 2px solid #fff; padding-bottom: 2px; }
+    .summary-comment { font-size: 12px; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 15px; font-style: italic; max-width: 250px; }
+    
+    /* 割り勘・ポイントエリア */
+    .kame-split-box {
+        font-size: 12px;
+        background: rgba(255,255,255,0.15);
+        padding: 4px 12px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .split-input {
+        width: 40px;
+        background: white;
+        border: none;
+        border-radius: 4px;
+        padding: 2px;
+        text-align: center;
+        font-weight: bold;
+    }
+    .kame-point-badge {
+        background: #fff;
+        color: #00704A;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    /* 各種操作ボタン */
+    .btn-gacha {
+        background: #ffc107;
+        color: #212529;
+        border: none;
+        padding: 8px 14px;
+        font-weight: 700;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 11px;
+        transition: transform 0.1s;
+    }
+    .btn-gacha:hover { background: #e0a800; }
+    .btn-gacha:active { transform: scale(0.95); }
+    .btn-reset { background: #6c757d; color: white; }
+    .btn-reset:hover { background: #5a6268; }
+
+    /* 💡 機能7：積み重なるタワーコンテナ */
+    .kame-tower-wrapper {
+        position: fixed;
+        bottom: 150px; 
+        right: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 90;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+    .kame-tower-wrapper.show { opacity: 1; visibility: visible; }
+
+    /* 積み重なる子亀たち */
+    .child-kame {
+        font-size: 16px;
+        margin-bottom: -6px; 
+        transform: scale(0);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .child-kame.visible { transform: scale(1); }
+
+    /* 親亀ボタン本体 */
+    .kame-totop {
+        background: #ffffff;
+        color: #00704A;
+        border: 2px solid #00704A;
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transform: translateY(0);
+        transition: transform 0.2s;
+    }
+    .kame-totop:hover { transform: translateY(-5px); background: #f2f7f4; }
+    .kame-totop span { font-size: 9px; font-weight: bold; margin-top: -2px; }
