@@ -265,12 +265,23 @@
             </div>
         </div>
         
+        <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; text-align: left;">
+    		<label style="font-weight: bold; color: #00704A; display: block; margin-bottom: 8px;">👤 お客様の年齢層（客層分析用）:</label>
+    		<select name="ageGroup" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;">
+        		<option value="unknown">不明 / 未選択</option>
+        		<option value="kids">キッズ（12歳以下）</option>
+        		<option value="youth">学生・若者（10代〜20代前半）</option>
+        		<option value="adult">大人（20代後半〜50代）</option>
+        		<option value="senior">シニア（60歳以上）</option>
+    		</select>
+		</div>
+        
         <input type="hidden" id="finalReceiptName" name="finalReceiptName" value="">
         <button type="button" id="submitBtn" class="btn-submit">🐢 登録する 🐢</button>
     </form>
     
     <div class="footer-nav">
-        <a href="main.jsp" class="back-link"><span class="egg"></span> メインページに戻る</a>
+        <a href="staff_main.jsp" class="back-link"><span class="egg"></span> メインページに戻る</a>
     </div>
 </div>
 

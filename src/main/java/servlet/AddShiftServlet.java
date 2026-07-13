@@ -23,13 +23,21 @@ public class AddShiftServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        // プルダウンに「在籍スタッフ」を表示するため、UserDAOから一覧を取得
+        // ① スタッフ一覧を取得（既存の処理）
         UserDAO userDao = new UserDAO();
         List<AppUser> userList = userDao.findAllUsers();
-        
         request.setAttribute("userList", userList);
         
-        // 管理者用のシフト登録画面（AddShift.jsp）へ
+        // ② 💡 タイポを修正して安全にシフト一覧を取得
+        ShiftDAO shiftDao = new ShiftDAO();
+        List<Shift> shiftList = shiftDao.findAllShifts();
+        
+        // 💡 JSP側で「shiftList」と「myShiftList」のどちらで受け取っていても
+        // 100%画面が正常に出るように両方の名前でセットしておく安全対策！
+        request.setAttribute("shiftList", shiftList);
+        request.setAttribute("myShiftList", shiftList);
+        
+        // adminの中のAddShift.jspへフォワード
         request.getRequestDispatcher("/admin/AddShift.jsp").forward(request, response);
     }
 

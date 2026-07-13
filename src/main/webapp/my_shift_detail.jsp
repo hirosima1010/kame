@@ -89,31 +89,41 @@
             AppUser user = (AppUser) request.getAttribute("targetUser");
             List<Shift> myShifts = (List<Shift>) request.getAttribute("myShifts");
 
+            // 💡 修正箇所①：404防止のため、戻るボタンのリンク先を ViewStaffShiftServlet 宛のURLに変数化
+            String backUrl = request.getContextPath() + "/viewStaffShifts?username=" + (user != null ? user.getUsername() : "");
+
             if (user == null) {
         %>
             <div class="error-msg">ユーザーデータの読み込みに失敗しました。</div>
             <div class="text-center" style="margin-top: 20px;">
-                <a href="${pageContext.request.contextPath}/shift" class="btn-back">シフト一覧へ戻る</a>
+                <a href="<%= backUrl %>" class="btn-back">シフト一覧へ戻る</a>
             </div>
         <%
                 return;
             }
 
-            // --- 💰 給与自動計算ロジック ---
+            // 💡 修正箇所②：今日の日付を取得して、過去の勤務日数・時間をカウントする
+            java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+
             double totalHours = 0.0;
             int hourlyWage = user.getHourlyWage();
             int transFee = user.getTransportationFee();
+            int actualWorkDays = 0; // 実際に働いた（過去の）日数
 
             if (myShifts != null) {
                 for (Shift s : myShifts) {
-                    totalHours += s.getWorkingHours(); // 各シフトの実働時間を足していく
+                    // 💡 「今日より前（過去）」のシフトだけを計算対象にする！
+                    if (s.getWorkDate() != null && s.getWorkDate().before(today)) {
+                        totalHours += s.getWorkingHours();
+                        actualWorkDays++;
+                    }
                 }
             }
 
             // 基本給 = 時給 × 総実働時間
             int basePay = (int) Math.round(totalHours * hourlyWage);
-            // 💡 1日でも出勤実績があれば交通費を支給するロジック（出勤日数×交通費にする場合は、シフトの件数を掛けてください）
-            int totalTrans = (myShifts != null && !myShifts.isEmpty()) ? transFee : 0;
+            // 1日でも出勤実績があれば交通費を支給するロジック
+            int totalTrans = (actualWorkDays > 0) ? transFee : 0;
             // 総支給額
             int totalPay = basePay + totalTrans;
         %>
@@ -132,18 +142,19 @@
                 </div>
                 <div class="pay-box">
                     <h3>今月の勤務実績</h3>
-                    <p style="margin: 5px 0; font-size: 13px;">総出勤日数: <strong><%= (myShifts != null) ? myShifts.size() : 0 %> 日</strong></p>
+                    <%-- 💡 過去の確定日数だけを表示 --%>
+                    <p style="margin: 5px 0; font-size: 13px;">総出勤日数: <strong><%= actualWorkDays %> 日</strong></p>
                     <div class="pay-value"><%= String.format("%.1f", totalHours) %> <span style="font-size:13px; color:#666;">H</span></div>
                 </div>
                 <div class="pay-box">
-                    <h3>内訳（概算）</h3>
+                    <h3>内訳（確定分）</h3>
                     <p style="margin: 5px 0; font-size: 13px;">基本給与: <strong><%= String.format("%,d", basePay) %> 円</strong></p>
                     <p style="margin: 5px 0; font-size: 13px;">支給交通費: <strong><%= String.format("%,d", totalTrans) %> 円</strong></p>
                 </div>
             </div>
 
             <div class="total-pay-section">
-                <div class="total-pay-title">💵 差引概算総支給額</div>
+                <div class="total-pay-title">💵 差引確定総支給額</div>
                 <div class="total-pay-value">￥ <%= String.format("%,d", totalPay) %> -</div>
             </div>
 
@@ -155,7 +166,7 @@
             </div>
         </div>
 
-        <h3 style="margin-top: 30px;">🗓️ 出勤実績詳細</h3>
+        <h3 style="margin-top: 30px;">🗓️ 出勤実績詳細（過去分のみ）</h3>
         <table class="style-table" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
             <thead>
                 <tr style="background: #f4f4f4;">
@@ -167,21 +178,27 @@
             </thead>
             <tbody>
                 <%
+                    boolean hasPastShift = false;
                     if (myShifts != null && !myShifts.isEmpty()) {
                         for (Shift s : myShifts) {
+                            // 💡 ここでも「過去の勤務」だけをテーブルの行としてループ出力する
+                            if (s.getWorkDate() != null && s.getWorkDate().before(today)) {
+                                hasPastShift = true;
                 %>
                 <tr style="text-align: center;">
                     <td style="padding: 10px; border: 1px solid #ddd;"><%= s.getWorkDate() %></td>
-                    <td style="padding: 10px; border: 1px solid #ddd;"><%= s.getStartTime() %> ～ <%= s.getEndTime() %></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><%= s.getStartTime() != null ? s.getStartTime().toString().substring(0, 5) : "" %> ～ <%= s.getEndTime() != null ? s.getEndTime().toString().substring(0, 5) : "" %></td>
                     <td style="padding: 10px; border: 1px solid #ddd;"><%= s.getBreakMinutes() %> 分</td>
                     <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: #0d47a1;"><%= String.format("%.1f", s.getWorkingHours()) %> 時間</td>
                 </tr>
                 <%
+                            }
                         }
-                    } else {
+                    }
+                    if (!hasPastShift) {
                 %>
                 <tr>
-                    <td colspan="4" style="text-align: center; color: #999; padding: 20px;">出勤データがありません。</td>
+                    <td colspan="4" style="text-align: center; color: #999; padding: 20px;">過去の出勤実績データはありません。</td>
                 </tr>
                 <%
                     }
@@ -189,8 +206,9 @@
             </tbody>
         </table>
 
-        <div class="text-center" style="margin-top: 30px;">
-            <a href="${pageContext.request.contextPath}/shift" class="btn-back" style="text-decoration: none;">⬅ シフト一覧へ戻る</a>
+        <div class="text-center" style="margin-top: 30px; text-align: center;">
+            <%-- 💡 修正箇所③：戻るリンクをあなたの作った ViewStaffShiftServlet に正しく繋ぎ直す --%>
+            <a href="<%= backUrl %>" class="btn-back" style="text-decoration: none; background-color: #bbb; color: white; padding: 10px 20px; border-radius: 4px;">⬅ シフト一覧へ戻る</a>
         </div>
     </div>
 

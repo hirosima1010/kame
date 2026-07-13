@@ -1,289 +1,191 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
+<%@ page import="model.Order" %>
+<%@ page import="java.util.Calendar" %>
+<%
+    List<Order> allOrders = (List<Order>) request.getAttribute("allOrders");
+    
+    // 期間別ランキングの受け取り
+    List<String[]> rankDay = (List<String[]>) request.getAttribute("rankDay");
+    List<String[]> rankMonth = (List<String[]>) request.getAttribute("rankMonth");
+    List<String[]> rankYear = (List<String[]>) request.getAttribute("rankYear");
+    
+    // 年齢別ランキングの受け取り
+    List<String[]> rankKids = (List<String[]>) request.getAttribute("rankKids");
+    List<String[]> rankYouth = (List<String[]>) request.getAttribute("rankYouth");
+    List<String[]> rankAdult = (List<String[]>) request.getAttribute("rankAdult");
+    List<String[]> rankSenior = (List<String[]>) request.getAttribute("rankSenior");
+    
+    // 年齢別売上サマリー
+    List<String[]> ageSalesSummary = (List<String[]>) request.getAttribute("ageSalesSummary");
+
+    int seaCount = (Integer) request.getAttribute("seaCount");
+    int landCount = (Integer) request.getAttribute("landCount");
+
+    // 今日の売上集計（Java側）
+    int todaySales = 0; int todayOrderCount = 0;
+    Calendar cal1 = Calendar.getInstance();
+    int ty = cal1.get(Calendar.YEAR); int tm = cal1.get(Calendar.MONTH); int td = cal1.get(Calendar.DAY_OF_MONTH);
+
+    if (allOrders != null) {
+        for (Order o : allOrders) {
+            Calendar cal2 = Calendar.getInstance(); cal2.setTime(o.getOrderDate());
+            if (cal2.get(Calendar.YEAR) == ty && cal2.get(Calendar.MONTH) == tm && cal2.get(Calendar.DAY_OF_MONTH) == td) {
+                todaySales += o.getTotalPrice(); todayOrderCount++;
+            }
+        }
+    }
+    int averageSpent = (todayOrderCount > 0) ? (todaySales / todayOrderCount) : 0;
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>売上実績一覧 | カフェシステムkame</title>
+<title>超多機能 売上分析モニタ | カフェシステムkame</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-    /* カメが背景をのんびり泳ぐアニメーション */
-    @keyframes swim {
-        0% { background-position: 0 0, 30px 30px, 0 0; }
-        100% { background-position: 100px 50px, 130px 80px, -50px 100px; }
-    }
-
-    /* 全体のベース */
-    body {
-        font-family: 'Montserrat', 'Noto Sans JP', sans-serif;
-        color: #212529;
-        margin: 0;
-        padding: 60px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-        box-sizing: border-box;
-
-        background-color: #eef5f0; 
-        background-image: radial-gradient(rgba(0, 112, 74, 0.04) 20%, transparent 20%),
-                          radial-gradient(rgba(0, 112, 74, 0.04) 20%, transparent 20%);
-        background-size: 60px 60px;
-        animation: swim 20s linear infinite; 
-        
-        /* マウスカーソルをカメに変更 */
-        cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='font-size:24px'><text y='24'>🐢</text></svg>"), auto;
-    }
-
-    /* 背景のカメ絵文字 */
-    body::before {
-        content: "🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢 🐢";
-        font-size: 28px;
-        opacity: 0.06; 
-        position: fixed;
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        height: 100%;
-        z-index: -2; 
-        word-wrap: break-word;
-        letter-spacing: 40px;
-        line-height: 80px;
-        padding: 20px;
-        pointer-events: none;
-    }
-
-    /* コンテナ */
-    .container {
-        background: rgba(255, 255, 255, 0.97); 
-        padding: 45px 40px;
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0, 112, 74, 0.1); 
-        max-width: 650px;
-        width: 100%;
-        box-sizing: border-box;
-        position: relative; 
-        border: 2px solid #00704A; 
-    }
-
-    .container::after {
-        content: "📜";
-        position: absolute;
-        font-size: 24px;
-        bottom: -15px;
-        right: -15px;
-    }
-
-    /* ヘッダー */
-    h1 {
-        font-size: 24px;
-        color: #00704A; 
-        margin-top: 0;
-        margin-bottom: 10px;
-        text-align: center;
-        font-weight: 700;
-        letter-spacing: 1px;
-    }
-
-    .subtitle {
-        font-size: 13px;
-        color: #6c757d;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    /* カメのつぶやきボックス */
-    .kame-report-box {
-        background-color: #f1f3f5;
-        border-left: 4px solid #00704A;
-        padding: 12px 16px;
-        border-radius: 4px;
-        margin-bottom: 25px;
-        font-size: 13px;
-        color: #495057;
-        line-height: 1.5;
-    }
-
-    /* テーブルスタイル */
-    table {
-        width: 100%;
-        border-collapse: separate; 
-        border-spacing: 0;
-        margin-bottom: 20px;
-    }
-    th {
-        border-bottom: 2px solid #00704A;
-        color: #00704A;
-        padding: 12px 10px;
-        font-weight: 700;
-        text-align: left;
-        font-size: 13px;
-    }
-    td {
-        padding: 14px 10px;
-        border-bottom: 1px solid #e9ecef;
-        color: #212529;
-        font-size: 13px;
-    }
-    tr:hover td {
-        background-color: #f2f7f4; 
-    }
-
-    /* カレンダースタイル風の文字、数値表記 */
-    .date-text {
-        font-family: 'Montserrat', sans-serif;
-        color: #495057;
-    }
-    .id-badge {
-        font-family: 'Montserrat', sans-serif;
-        background-color: #e2e8f0;
-        color: #475569;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-weight: bold;
-    }
-    .price-col {
-        text-align: right;
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 700;
-    }
+    body { font-family: 'Montserrat', 'Noto Sans JP', sans-serif; background-color: #f4f7f5; margin: 0; padding: 30px 20px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .header { display: flex; justify-content: space-between; align-items: center; background: #00704A; color: white; padding: 20px 30px; border-radius: 12px; margin-bottom: 25px; }
+    .btn-back { background: white; color: #00704A; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; }
     
-    /* 総合計行 */
-    .row-total td {
-        background-color: #00704A;
-        color: #ffffff;
-        font-size: 15px;
-        font-weight: bold;
-        border-top: 2px solid #004d34;
-        border-bottom: none; 
-    }
-    .row-total td:first-child {
-        border-radius: 0 0 0 8px;
-    }
-    .row-total td:last-child {
-        border-radius: 0 0 8px 0;
-    }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
+    .kpi-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 5px solid #00704A; }
+    .kpi-title { font-size: 13px; color: #666; font-weight: bold; }
+    .kpi-value { font-size: 26px; font-weight: 700; margin-top: 5px; }
 
-    /* 空っぽのとき */
-    .empty-message {
-        text-align: center;
-        padding: 40px 0;
-        color: #868e96;
-        font-size: 14px;
-    }
+    /* 📊 タブメニューのスタイリング */
+    .tab-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 25px; }
+    .tab-buttons { display: flex; gap: 10px; border-bottom: 2px solid #eef5f0; padding-bottom: 10px; margin-bottom: 20px; }
+    .tab-btn { background: #eee; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; color: #555; font-size: 14px; }
+    .tab-btn.active { background: #00704A; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    /* 戻るリンク */
-    .back-link {
-        display: block;
-        text-align: center;
-        color: #00704A;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
-        margin-top: 10px;
-    }
-    .back-link:hover { text-decoration: underline; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th { text-align: left; color: #868e96; font-size: 12px; padding-bottom: 10px; border-bottom: 1px solid #dee2e6; }
+    td { padding: 12px 6px; border-bottom: 1px dashed #eee; font-size: 14px; }
+    .rank-badge { background: #eef5f0; color: #00704A; font-weight: bold; padding: 2px 8px; border-radius: 20px; font-size: 11px; }
+    .text-right { text-align: right; }
+    
+    .age-box-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+    .age-card { background: #fffdf8; border: 1px solid #f1e4bf; padding: 15px; border-radius: 8px; }
+    .age-title { font-weight: bold; color: #856404; font-size: 14px; border-bottom: 1px solid #f1e4bf; padding-bottom: 5px; margin-bottom: 8px; }
 </style>
+<script>
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+</script>
 </head>
 <body>
 
-    <%
-        // 【対策】Sales型を使わず、汎用的なListオブジェクトとして安全に取得
-        List<?> salesList = (List<?>) request.getAttribute("salesList");
-        
-        int totalSales = 0;
-        int salesCount = 0;
-        
-        if (salesList != null) {
-            salesCount = salesList.size();
-            // 合計金額の計算はJavaリフレクション（型が不明でもメソッドを強制実行する技）で安全に処理
-            for (Object obj : salesList) {
-                try {
-                    java.lang.reflect.Method method = obj.getClass().getMethod("getAmount");
-                    Integer amount = (Integer) method.invoke(obj);
-                    if (amount != null) {
-                        totalSales += amount;
-                    }
-                } catch (Exception e) {
-                    // 万が一メソッドが呼べなくてもエラーで落とさない
-                }
-            }
-        }
-
-        // 件数に応じたカメのコメント
-        String statusComment = "";
-        if (salesCount == 0) {
-            statusComment = "🐢「まだ今日の注文履歴はないみたいやね。のんびり最初の波が来るのを待とうか…」";
-        } else if (salesCount < 5) {
-            statusComment = "🐢「ポツポツと注文が入っとるね。カメの歩みのごとく、1歩ずつ確実に売上を重ねていこか！」";
-        } else {
-            statusComment = "🐢「おぉ、大繁盛やん！伝票が甲羅みたいに積み重なっとる。働きガメのみんな、ほんまにお疲れ様やで！」";
-        }
-    %>
-
 <div class="container">
-    <h1>🐢 売上実績一覧（航海ログ） 📜</h1>
-    <div class="subtitle">Cafe kame Sales History</div>
-    
-    <!-- カメ店長の状況つぶやき -->
-    <div class="kame-report-box">
-        <%= statusComment %>
+    <div class="header">
+        <h1>📊 ガチ業務用・最強売上多機能ダッシュボード</h1>
+        <a href="staff_main.jsp" class="btn-back">🐢 メインへ戻る</a>
     </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>売上日時（漂流時刻）</th>
-                <th>注文ID</th>
-                <th style="text-align: right;">合計金額</th>
-            </tr>
-        </thead>
-        <tbody>
-            <%
-                if (salesList != null && !salesList.isEmpty()) {
-                    for (Object sales : salesList) {
-                        // 【対策】型エラーを避けるため、各値もリフレクションで動的に引っ張る
-                        String dateTime = "";
-                        int orderId = 0;
-                        int amount = 0;
-                        try {
-                            dateTime = String.valueOf(sales.getClass().getMethod("getDateTime").invoke(sales));
-                            orderId = (Integer) sales.getClass().getMethod("getOrderId").invoke(sales);
-                            amount = (Integer) sales.getClass().getMethod("getAmount").invoke(sales);
-                        } catch(Exception e) {
-                            dateTime = "データエラー";
-                        }
-            %>
-            <tr>
-                <td class="date-text"><%= dateTime %></td>
-                <td><span class="id-badge">ID: <%= orderId %></span></td>
-                <td class="price-col"><%= String.format("%,d", amount) %> 円</td>
-            </tr>
-            <%
-                    }
-                } else {
-            %>
-            <tr>
-                <td colspan="3" class="empty-message">
-                    🏝️ まだ売上データがありまへん。<br>のんびりお茶でも飲んで待ちまひょ。
-                </td>
-            </tr>
-            <%
-                }
-            %>
-            
-            <% if (salesList != null && !salesList.isEmpty()) { %>
-            <tr class="row-total">
-                <td colspan="2" style="text-align: right;">🐢 総合計（すべての甲羅）：</td>
-                <td class="price-col"><%= String.format("%,d", totalSales) %> 円</td>
-            </tr>
-            <% } %>
-        </tbody>
-    </table>
-    
-    <a href="main.jsp" class="back-link">🐢 陸（メインページ）に戻る</a>
+
+    <div class="dashboard-grid">
+        <div class="kpi-card" style="border-left-color: #2b8a3e;"><div class="kpi-title">📈 本日の総売上高</div><div class="kpi-value" style="color: #2b8a3e;">￥<%= String.format("%,d", todaySales) %>-</div></div>
+        <div class="kpi-card" style="border-left-color: #0b5ed7;"><div class="kpi-title">🛒 本日の総注文数</div><div class="kpi-value" style="color: #0b5ed7;"><%= todayOrderCount %> 卓</div></div>
+        <div class="kpi-card" style="border-left-color: #f57c00;"><div class="kpi-title">👥 本日の客単価</div><div class="kpi-value" style="color: #f57c00;">￥<%= String.format("%,d", averageSpent) %>-</div></div>
+    </div>
+
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('tab-period', this)">📅 期間別ランキング（日・月・年）</button>
+            <button class="tab-btn" onclick="switchTab('tab-age-rank', this)">👑 年齢層別の人気メニュー</button>
+            <button class="tab-btn" onclick="switchTab('tab-age-sales', this)">💰 年齢層別の売上貢献度</button>
+        </div>
+
+        <div id="tab-period" class="tab-content active">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div>
+                    <h3 style="color:#00704A; border-bottom:2px solid #00704A; padding-bottom:5px;">☀️ 本日の人気 TOP5</h3>
+                    <%= renderTable(rankDay) %>
+                </div>
+                <div>
+                    <h3 style="color:#0b5ed7; border-bottom:2px solid #0b5ed7; padding-bottom:5px;">🌙 今月の人気 TOP5</h3>
+                    <%= renderTable(rankMonth) %>
+                </div>
+                <div>
+                    <h3 style="color:#f57c00; border-bottom:2px solid #f57c00; padding-bottom:5px;">🌋 今年の人気 TOP5</h3>
+                    <%= renderTable(rankYear) %>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-age-rank" class="tab-content">
+            <h3 style="margin-top:0;">👤 年齢層別の売れ筋メニュー（各TOP 3）</h3>
+            <div class="age-box-grid">
+                <div class="age-card"><div class="age-title">👧 キッズ（12歳以下）</div><%= renderAgeList(rankKids) %></div>
+                <div class="age-card"><div class="age-title">⚡ 若者・学生（10〜20代）</div><%= renderAgeList(rankYouth) %></div>
+                <div class="age-card"><div class="age-title">💼 大人（30〜50代）</div><%= renderAgeList(rankAdult) %></div>
+                <div class="age-card"><div class="age-title">👴 シニア（60歳以上）</div><%= renderAgeList(rankSenior) %></div>
+            </div>
+        </div>
+
+        <div id="tab-age-sales" class="tab-content">
+            <h3 style="margin-top:0;">💰 どの客層が一番お店に貢献しているか？</h3>
+            <table>
+                <thead>
+                    <tr><th>年齢層</th><th class="text-right">総注文数</th><th class="text-right">累計売上総額</th></tr>
+                </thead>
+                <tbody>
+                    <% if(ageSalesSummary == null || ageSalesSummary.isEmpty()) { %>
+                        <tr><td colspan="3" style="text-align:center; color:#999;">データがありません</td></tr>
+                    <% } else { 
+                        for(String[] row : ageSalesSummary) {
+                            String displayAge = row[0];
+                            if("kids".equals(displayAge)) displayAge="キッズ(12歳以下)";
+                            else if("youth".equals(displayAge)) displayAge="若者・学生";
+                            else if("adult".equals(displayAge)) displayAge="大人";
+                            else if("senior".equals(displayAge)) displayAge="シニア";
+                            else displayAge="不明";
+                    %>
+                        <tr>
+                            <td><strong><%= displayAge %></strong></td>
+                            <td class="text-right"><%= row[1] %> 回</td>
+                            <td class="text-right" style="font-weight:bold; color:#2b8a3e;">￥<%= String.format("%,d", Integer.parseInt(row[2])) %></td>
+                        </tr>
+                    <% } } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 </body>
 </html>
+
+<%! 
+    // テーブルを描画するための共通関数カメ 🐢
+    String renderTable(List<String[]> list) {
+        if(list == null || list.isEmpty()) return "<p style='color:#999; font-size:12px;'>データなし</p>";
+        StringBuilder sb = new StringBuilder("<table><thead><tr><th>順位</th><th>メニュー</th><th class='text-right'>数</th></tr></thead><tbody>");
+        int r = 1;
+        for(String[] row : list) {
+            sb.append("<tr><td><span class='rank-badge'>#").append(r).append("</span></td>")
+              .append("<td><strong>").append(row[0]).append("</strong></td>")
+              .append("<td class='text-right'>").append(row[1]).append("個</td></tr>");
+            r++;
+        }
+        sb.append("</tbody></table>");
+        return sb.toString();
+    }
+
+    // 年齢層別の簡易リスト
+    String renderAgeList(List<String[]> list) {
+        if(list == null || list.isEmpty()) return "<span style='color:#999; font-size:12px;'>データなしカメ</span>";
+        StringBuilder sb = new StringBuilder("<ol style='padding-left:18px; margin:5px 0; font-size:13px;'>");
+        for(String[] row : list) {
+            sb.append("<li style='margin-bottom:4px;'><strong>").append(row[0]).append("</strong> (").append(row[1]).append("個)</li>");
+        }
+        sb.append("</ol>");
+        return sb.toString();
+    }
+%>

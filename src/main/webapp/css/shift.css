@@ -1,0 +1,242 @@
+@charset "UTF-8";
+
+/* ☕ ベースとなる背景と文字 */
+body {
+    background-color: #fdfbf7;
+    color: #3e2723;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+h1 {
+    text-align: center;
+    font-family: 'Times New Roman', serif;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    color: #3e2723;
+    font-size: 28px;
+}
+
+/* 📄 メインの白いカードセクション */
+.form-section {
+    background: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(93, 64, 55, 0.08);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #5d4037;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+/* ✏️ 入力フォーム */
+.form-control {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e0d4ce;
+    border-radius: 8px;
+    font-size: 15px;
+    background-color: #fdfdfd;
+    color: #3e2723;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #8d6e63;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(141, 110, 99, 0.15);
+}
+
+.form-control:disabled {
+    background-color: #eee;
+    color: #777;
+    cursor: not-allowed;
+    border-color: #ddd;
+}
+
+/* 🟫 登録ボタン */
+.btn-submit {
+    background-color: #3e2723;
+    color: #fff;
+    border: none;
+    padding: 16px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(62, 39, 35, 0.2);
+}
+
+.btn-submit:hover {
+    background-color: #5d4037;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(62, 39, 35, 0.3);
+}
+
+/* ⏰ 時間入力の並び */
+.time-range-container {
+    display: flex !important;
+    gap: 20px !important;
+    width: 100% !important;
+    margin-bottom: 0 !important;
+    box-sizing: border-box;
+}
+
+.time-range-container .time-box {
+    flex: 1 !important;
+    margin-bottom: 24px !important;
+}
+
+.time-range-container .time-box label {
+    white-space: nowrap !important;
+}
+
+/* 📊 シフト一覧テーブル（ガタつき完全撲滅） */
+.list-section {
+    margin-top: 50px;
+    border-top: 1px solid #efebe9;
+    padding-top: 40px;
+    width: 100%;
+}
+
+.list-section h3 {
+    color: #3e2723;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.shift-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 15px;
+    border: 1px solid #efebe9;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* 💡 すべての文字を強制的に中央の同じ高さに揃える */
+.shift-table th, .shift-table td {
+    padding: 12px 10px;
+    font-size: 14px;
+    border-bottom: 1px solid #efebe9;
+    text-align: center !important;  /* 横方向中央寄せ */
+    vertical-align: middle !important; /* 縦方向中央寄せ */
+    height: 48px; /* 高さを統一してガタつきをリセット */
+    box-sizing: border-box;
+}
+
+.shift-table tr:last-child td {
+    border-bottom: none;
+}
+
+.shift-table th {
+    background-color: #f7f5f2;
+    color: #5d4037;
+    font-weight: 600;
+    border-bottom: 2px solid #e0d4ce;
+}
+
+.shift-table td {
+    background-color: #fff;
+    color: #4e342e;
+}
+
+.shift-table tr:hover td {
+    background-color: #fdfbf9;
+}
+
+/* ⚙️ 操作ボタンエリアの調整 */
+.action-container {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center; /* 縦の中心を絶対に揃える */
+    height: 100%;
+    width: 100%;
+}
+
+/* 💡 削除フォーム自体が持つ不自然な余白・高さを完全にゼロにする */
+.delete-form {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+/* ボタンのサイズ・余白・高さを完全に統一 */
+.btn-edit, .btn-delete {
+    height: 32px; /* 高さをミリ単位で固定 */
+    padding: 0 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center; /* ボタン内の文字の縦位置を中央に */
+    justify-content: center;
+    text-decoration: none;
+    border: none;
+    line-height: 1;
+}
+
+.btn-edit {
+    background-color: #8d6e63;
+    color: white;
+}
+.btn-edit:hover { background-color: #5d4037; }
+
+.btn-delete {
+    background-color: #e53935;
+    color: white;
+}
+.btn-delete:hover { background-color: #c62828; }
+
+/* メッセージ・戻る */
+.msg {
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+.msg-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.msg-error { background: #ffeeb2; color: #856404; border: 1px solid #ffeeba; }
+
+.back-link {
+    display: inline-block;
+    color: #8d6e63;
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 30px;
+}
+.back-link:hover { color: #3e2723; text-decoration: underline; }
