@@ -36,57 +36,94 @@ public class OrderSubmitServlet extends HttpServlet {
             }
         }
 
-        // 3. order.jsp から送られてきたパラメーターを確実にキャッチ
+        // 3. order.jsp から送られてきたパラメーターを取得
         String eatStyle = request.getParameter("eatStyle");
         String myKameShellStr = request.getParameter("myKameShell");
         boolean myKameShell = "true".equals(myKameShellStr);
         String needReceipt = request.getParameter("needReceipt");
         String finalReceiptName = request.getParameter("finalReceiptName");
-        
-        // 💡 追加した年齢層（ageGroup）をここで確実に取得！
         String ageGroup = request.getParameter("ageGroup");
         if (ageGroup == null || ageGroup.trim().isEmpty()) {
             ageGroup = "unknown";
         }
 
-        // 4. 最新のメニューリストをDBから取得して、注文された数量から金額を計算する
+        // 4. 最新のメニューリストをDBから取得
         MenuDAO menuDao = new MenuDAO();
         List<Menu> menuList = menuDao.findAllMenus();
         
         List<OrderDetail> detailsList = new ArrayList<>();
+        List<String[]> orderedDisplayList = new ArrayList<>(); // JSP表示用
         int subTotal = 0;
 
-        // 💡 ここが超重要！order.jspのループインデックス（globalItemIndex）と完全に一致させる
+        // 💡 修正ポイント：メニューID (m.getId()) を使って画面から直接数量を確実・安全に回収カメ！
         if (menuList != null) {
-            int globalItemIndex = 1;
             for (Menu m : menuList) {
-                // quantity_1, quantity_2 ... という名前で画面から送られてくる数量を取得
-                String qtyParam = request.getParameter("quantity_" + globalItemIndex);
+                // JSP側で設定した「quantity_メニューID」の名前で正確に取得
+                String qtyParam = request.getParameter("quantity_" + m.getId());
                 
                 if (qtyParam != null && !qtyParam.trim().isEmpty() && !qtyParam.equals("0")) {
                     try {
                         int qty = Integer.parseInt(qtyParam.trim());
                         
                         if (qty > 0) {
-                            // 明細オブジェクト（OrderDetail）を作ってリストに詰める
                             OrderDetail detail = new OrderDetail();
                             detail.setMenuName(m.getMenuName());
                             detail.setPrice(m.getPrice());
                             detail.setQuantity(qty);
                             detailsList.add(detail);
                             
-                            // 小計をどんどん足していく
-                            subTotal += m.getPrice() * qty;
+                            int totalItemPrice = m.getPrice() * qty;
+                            subTotal += totalItemPrice;
+                            
+                            orderedDisplayList.add(new String[]{
+                                m.getMenuName(), 
+                                String.valueOf(m.getPrice()), 
+                                String.valueOf(qty), 
+                                String.valueOf(totalItemPrice)
+                            });
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("⚠️ 数量の数値変換に失敗したカメ: " + qtyParam);
+                        System.out.println("⚠️ 不正な数量を無視したカメ: " + qtyParam);
                     }
                 }
-                globalItemIndex++;
             }
         }
 
-        // 割引と最終合計金額の計算（マイ甲羅があれば200円引き）
+        // 💡 隠しコマンド（禁断の裏メニュー：ID 999）の数量回収も個別でしっかり救済カメ！
+        String secretQtyParam = request.getParameter("quantity_999");
+        if (secretQtyParam != null && !secretQtyParam.trim().isEmpty() && !secretQtyParam.equals("0")) {
+            try {
+                int qty = Integer.parseInt(secretQtyParam.trim());
+                if (qty > 0) {
+                    OrderDetail detail = new OrderDetail();
+                    detail.setMenuName("幻の竜宮城特製パフェ（玉手箱付き）");
+                    detail.setPrice(99999);
+                    detail.setQuantity(qty);
+                    detailsList.add(detail);
+                    
+                    int totalItemPrice = 99999 * qty;
+                    subTotal += totalItemPrice;
+                    
+                    orderedDisplayList.add(new String[]{
+                        "幻の竜宮城特製パフェ（玉手箱付き）", 
+                        "99999", 
+                        String.valueOf(qty), 
+                        String.valueOf(totalItemPrice)
+                    });
+                }
+            } catch (NumberFormatException e) {
+                // スルー
+            }
+        }
+
+        // ⚠️ 鉄壁ガード（これで「正しい注文」があれば確実にここを突破できるカメ！）
+        if (detailsList.isEmpty()) {
+            System.out.println("⚠️ 注文明細が空のため、処理を安全に中断して注文画面へ戻したカメ。");
+            response.sendRedirect("order");
+            return;
+        }
+
+        // 割引と最終合計金額の計算
         int discount = (myKameShell && subTotal > 0) ? 200 : 0;
         int finalTotal = Math.max(0, subTotal - discount);
 
@@ -95,12 +132,12 @@ public class OrderSubmitServlet extends HttpServlet {
         order.setStaffName(staffName);
         order.setEatStyle(eatStyle != null ? eatStyle : "land");
         order.setMyKameShell(myKameShell);
-        order.setTotalPrice(finalTotal);       // 💡 計算された最終合計金額をセット！
+        order.setTotalPrice(finalTotal);
         order.setReceiptName(finalReceiptName);
         order.setDetails(detailsList);
-        order.setAgeGroup(ageGroup);           // 💡 年齢層をセット！
+        order.setAgeGroup(ageGroup);
 
-        // 6. OrderDAOを使って、PostgreSQLに注文履歴を保存！
+        // 6. OrderDAOを使って、PostgreSQLに注文履歴を保存
         OrderDAO orderDao = new OrderDAO();
         boolean isSaved = orderDao.insertOrder(order);
         
@@ -108,16 +145,18 @@ public class OrderSubmitServlet extends HttpServlet {
             System.out.println("⚠️ 注文履歴のデータベース保存に失敗しましたカメ…");
         }
 
-        // 7. 確定画面（kakuteigamen.jsp）へ渡すリクエストスコープにデータを詰め直す
-        request.setAttribute("eatStyle", eatStyle);
-        request.setAttribute("myKameShell", myKameShellStr);
-        request.setAttribute("needReceipt", needReceipt);
-        request.setAttribute("finalReceiptName", finalReceiptName);
-        request.setAttribute("menuList", menuList);      // メニュー一覧
-        request.setAttribute("staffName", staffName);    // 担当スタッフ名
-        request.setAttribute("ageGroup", ageGroup);      // 年齢層
+        // 7. 確定データをセッションに詰め込んでリダイレクト
+        session.setAttribute("complete_eatStyle", eatStyle);
+        session.setAttribute("complete_myKameShell", myKameShellStr);
+        session.setAttribute("complete_needReceipt", needReceipt);
+        session.setAttribute("complete_finalReceiptName", finalReceiptName);
+        session.setAttribute("complete_staffName", staffName);
+        session.setAttribute("complete_orderedList", orderedDisplayList);
+        session.setAttribute("complete_subTotal", String.valueOf(subTotal));     
+        session.setAttribute("complete_discount", String.valueOf(discount));     
+        session.setAttribute("complete_finalTotal", String.valueOf(finalTotal)); 
 
-        // 確定画面「kakuteigamen.jsp」へフォワード！
-        request.getRequestDispatcher("kakuteigamen.jsp").forward(request, response);
+        // リダイレクトで確定画面へ
+        response.sendRedirect("kakuteigamen.jsp");
     }
 }

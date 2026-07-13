@@ -13,6 +13,7 @@ public class Order implements Serializable {
     private String receiptName;
     private Timestamp orderDate;
     private List<OrderDetail> details; // この注文に紐づく明細リスト
+    private String ageGroup;           // 💡 追加：年齢層
 
     // コンストラクタ
     public Order() {}
@@ -44,4 +45,8 @@ public class Order implements Serializable {
     public void setOrderDate(Timestamp orderDate) { this.orderDate = orderDate; }
     public List<OrderDetail> getDetails() { return details; }
     public void setDetails(List<OrderDetail> details) { this.details = details; }
+    
+    // 💡 追加：ageGroup のゲッター・セッター
+    public String getAgeGroup() { return ageGroup; }
+    public void setAgeGroup(String ageGroup) { this.ageGroup = ageGroup; }
 }

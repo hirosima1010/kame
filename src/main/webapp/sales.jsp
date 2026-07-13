@@ -19,8 +19,9 @@
     // 年齢別売上サマリー
     List<String[]> ageSalesSummary = (List<String[]>) request.getAttribute("ageSalesSummary");
 
-    int seaCount = (Integer) request.getAttribute("seaCount");
-    int landCount = (Integer) request.getAttribute("landCount");
+    // サーブレット側でnullや型に不整合があっても落ちないように安全に取得
+    int seaCount = request.getAttribute("seaCount") != null ? (Integer) request.getAttribute("seaCount") : 0;
+    int landCount = request.getAttribute("landCount") != null ? (Integer) request.getAttribute("landCount") : 0;
 
     // 今日の売上集計（Java側）
     int todaySales = 0; int todayOrderCount = 0;
@@ -29,9 +30,11 @@
 
     if (allOrders != null) {
         for (Order o : allOrders) {
-            Calendar cal2 = Calendar.getInstance(); cal2.setTime(o.getOrderDate());
-            if (cal2.get(Calendar.YEAR) == ty && cal2.get(Calendar.MONTH) == tm && cal2.get(Calendar.DAY_OF_MONTH) == td) {
-                todaySales += o.getTotalPrice(); todayOrderCount++;
+            if (o.getOrderDate() != null) {
+                Calendar cal2 = Calendar.getInstance(); cal2.setTime(o.getOrderDate());
+                if (cal2.get(Calendar.YEAR) == ty && cal2.get(Calendar.MONTH) == tm && cal2.get(Calendar.DAY_OF_MONTH) == td) {
+                    todaySales += o.getTotalPrice(); todayOrderCount++;
+                }
             }
         }
     }
@@ -141,11 +144,16 @@
                     <% } else { 
                         for(String[] row : ageSalesSummary) {
                             String displayAge = row[0];
-                            if("kids".equals(displayAge)) displayAge="キッズ(12歳以下)";
-                            else if("youth".equals(displayAge)) displayAge="若者・学生";
-                            else if("adult".equals(displayAge)) displayAge="大人";
-                            else if("senior".equals(displayAge)) displayAge="シニア";
-                            else displayAge="不明";
+                            if(displayAge != null) {
+                                // 💡 小文字・大文字どちらが来ても絶対にヒットするようにequalsIgnoreCaseに変更カメ！
+                                if("kids".equalsIgnoreCase(displayAge)) displayAge="キッズ(12歳以下)";
+                                else if("youth".equalsIgnoreCase(displayAge)) displayAge="若者・学生";
+                                else if("adult".equalsIgnoreCase(displayAge)) displayAge="大人";
+                                else if("senior".equalsIgnoreCase(displayAge)) displayAge="シニア";
+                                else if("unknown".equalsIgnoreCase(displayAge)) displayAge="不明（未選択）";
+                            } else {
+                                displayAge = "不明";
+                            }
                     %>
                         <tr>
                             <td><strong><%= displayAge %></strong></td>
@@ -165,7 +173,7 @@
 <%! 
     // テーブルを描画するための共通関数カメ 🐢
     String renderTable(List<String[]> list) {
-        if(list == null || list.isEmpty()) return "<p style='color:#999; font-size:12px;'>データなし</p>";
+        if(list == null || list.isEmpty()) return "<p style='color:#999; font-size:12px;'>データなしカメ 🐢</p>";
         StringBuilder sb = new StringBuilder("<table><thead><tr><th>順位</th><th>メニュー</th><th class='text-right'>数</th></tr></thead><tbody>");
         int r = 1;
         for(String[] row : list) {
@@ -178,9 +186,9 @@
         return sb.toString();
     }
 
-    // 年齢層別の簡易リスト
+    // 💡 修正：年齢層別の簡易リスト（データがないときは「これから集計カメ！」にする）
     String renderAgeList(List<String[]> list) {
-        if(list == null || list.isEmpty()) return "<span style='color:#999; font-size:12px;'>データなしカメ</span>";
+        if(list == null || list.isEmpty()) return "<span style='color:#999; font-size:12px; display:block; margin-top:5px;'>💡 まだ注文がありません</span>";
         StringBuilder sb = new StringBuilder("<ol style='padding-left:18px; margin:5px 0; font-size:13px;'>");
         for(String[] row : list) {
             sb.append("<li style='margin-bottom:4px;'><strong>").append(row[0]).append("</strong> (").append(row[1]).append("個)</li>");

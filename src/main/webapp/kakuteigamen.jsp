@@ -1,51 +1,42 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
-<%@ page import="model.Menu" %>
 <%
-    // 前の画面・サーブレットから送信されたデータの受け取り
+    // 💡 文字化け対策
     request.setCharacterEncoding("UTF-8");
 
-    String eatStyle = request.getParameter("eatStyle"); // sea or land
-    String myKameShell = request.getParameter("myKameShell"); // "true" or null
-    String needReceipt = request.getParameter("needReceipt"); // "true" or null
-    String finalReceiptName = request.getParameter("finalReceiptName"); // 宛名
-
-    // 💡 サーブレット側でバチッと判定した「担当スタッフ名」をそのまま受け取る
-    String currentStaffName = (String) request.getAttribute("staffName");
+    // サーブレットからセッション経由で安全に確定データを受け取るカメ！
+    String eatStyle = (String) session.getAttribute("complete_eatStyle");
+    String myKameShell = (String) session.getAttribute("complete_myKameShell");
+    String needReceipt = (String) session.getAttribute("complete_needReceipt");
+    String finalReceiptName = (String) session.getAttribute("complete_finalReceiptName");
+    String currentStaffName = (String) session.getAttribute("complete_staffName");
+    
     if (currentStaffName == null) {
         currentStaffName = "ゲストスタッフ";
     }
 
-    // サーブレットから引き継いだメニューリストを使う
-    List<Menu> menuList = (List<Menu>) request.getAttribute("menuList");
-    
-    // 注文された明細を格納するリスト
-    List<String[]> orderedList = new ArrayList<String[]>();
-    int subTotal = 0;
-
-    // 注文数量(quantity_x)をチェックして明細を組み立てる
-    if (menuList != null) {
-        int globalItemIndex = 1;
-        for (Menu m : menuList) {
-            String qtyParam = request.getParameter("quantity_" + globalItemIndex);
-            if (qtyParam != null && !qtyParam.trim().isEmpty() && !qtyParam.equals("0")) {
-                int qty = Integer.parseInt(qtyParam);
-                
-                String name = m.getMenuName();
-                int price = m.getPrice();
-                int totalItemPrice = price * qty;
-                
-                subTotal += totalItemPrice;
-                orderedList.add(new String[]{name, String.valueOf(price), String.valueOf(qty), String.valueOf(totalItemPrice)});
-            }
-            globalItemIndex++;
-        }
+    // すでに計算済みの確定リストを取得
+    List<String[]> orderedList = (List<String[]>) session.getAttribute("complete_orderedList");
+    if (orderedList == null) {
+        orderedList = new ArrayList<String[]>();
     }
-
-    // 各種割引・ポイント計算
-    int discount = (myKameShell != null && myKameShell.equals("true") && subTotal > 0) ? 200 : 0;
-    int finalTotal = Math.max(0, subTotal - discount);
+    
+    // 💡 型の不一致を完全に防ぐ安全なデータ取得処理カメ！
+    int subTotal = 0;
+    int discount = 0;
+    int finalTotal = 0;
+    
+    if (session.getAttribute("complete_subTotal") != null) {
+        subTotal = Integer.parseInt(session.getAttribute("complete_subTotal").toString());
+    }
+    if (session.getAttribute("complete_discount") != null) {
+        discount = Integer.parseInt(session.getAttribute("complete_discount").toString());
+    }
+    if (session.getAttribute("complete_finalTotal") != null) {
+        finalTotal = Integer.parseInt(session.getAttribute("complete_finalTotal").toString());
+    }
+    
     int kamePoint = finalTotal / 100;
 
     // カメランク判定
@@ -62,6 +53,7 @@
         kameComment = "たくさん召し上がって、のんびり強い甲羅を育ててほしいカメ。";
     } else if (finalTotal > 0) {
         kameRank = "普通のミドリガメ";
+        kameComment = "ご注文ありがとな！のんびり厨房で作っとるから待っててな〜。";
     }
 %>
 <!DOCTYPE html>

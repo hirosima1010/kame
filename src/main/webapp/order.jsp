@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/order.css" type="text/css">
 <style>
-/* 🛠️ 追加：売り切れ（disabled）行のスタイル調整 */
+/* 売り切れ（disabled）行のスタイル調整 */
 .menu-row.sold-out-row {
     background-color: #f5f5f5 !important;
     color: #999 !important;
@@ -52,7 +52,7 @@
 <div class="kame-ad kame-ad-right">
     <span class="ad-tag">おもしろ広告</span>
     <div style="font-size: 32px;">📦🐢</div>
-    <div class="ad-title ad-title-blue">かめさんマークの引越し</div>
+    <div class="ad-title ad-title-blue">かめさんマーク of 引越し</div>
     <div class="ad-desc">「まごころ込めて、万年かけて運びます。」ありさんマークより圧倒的に遅いですが丁寧です。</div>
     <a href="#" class="ad-btn ad-btn-blue" onclick="alert('見積もり完了までに3年ほどかかります🐢'); return false;">のんびり見積もり</a>
 </div>
@@ -72,7 +72,6 @@
     <%
         java.util.List<model.Menu> menuList = (java.util.List<model.Menu>) request.getAttribute("menuList");
         boolean isDatabaseConnected = (menuList != null && !menuList.isEmpty());
-        int globalItemIndex = 1;
     %>
 
     <% if (!isDatabaseConnected) { %>
@@ -85,7 +84,7 @@
         </div>
     <% } %>
 
-    <form action="orderSubmit" method="post" id="orderForm">
+    <form action="${pageContext.request.contextPath}/orderSubmit" method="post" id="orderForm">
 
         <div class="category-section" id="sec_recommend">
             <h2 class="category-title"><span>✨ 当店おすすめ（カメ推し）</span><span>🐢</span></h2>
@@ -105,17 +104,18 @@
                             <% if(m.getDescription() != null && !m.getDescription().trim().isEmpty()) { %>
                                 <span class="menu-desc"><%= m.getDescription() %></span>
                             <% } %>
+                            <input type="hidden" name="menuId_<%= m.getId() %>" value="<%= m.getId() %>">
                         </td>
                         <td><%= m.getPrice() %> 円</td>
                         <td>
                             <div class="qty-wrapper">
                                 <button type="button" class="btn-step dec-btn" <%= m.isAvailable() ? "" : "disabled" %>>-</button>
-                                <input type="number" name="quantity_<%= globalItemIndex %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
+                                <input type="number" name="quantity_<%= m.getId() %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
                                 <button type="button" class="btn-step inc-btn" <%= m.isAvailable() ? "" : "disabled" %>>+</button>
                             </div>
                         </td>
                     </tr>
-                    <% globalItemIndex++; } } } %>
+                    <% } } } %>
                 </tbody>
             </table>
         </div>
@@ -138,17 +138,18 @@
                             <% if(m.getDescription() != null && !m.getDescription().trim().isEmpty()) { %>
                                 <span class="menu-desc"><%= m.getDescription() %></span>
                             <% } %>
+                            <input type="hidden" name="menuId_<%= m.getId() %>" value="<%= m.getId() %>">
                         </td>
                         <td><%= m.getPrice() %> 円</td>
                         <td>
                             <div class="qty-wrapper">
                                 <button type="button" class="btn-step dec-btn" <%= m.isAvailable() ? "" : "disabled" %>>-</button>
-                                <input type="number" name="quantity_<%= globalItemIndex %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
+                                <input type="number" name="quantity_<%= m.getId() %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
                                 <button type="button" class="btn-step inc-btn" <%= m.isAvailable() ? "" : "disabled" %>>+</button>
                             </div>
                         </td>
                     </tr>
-                    <% globalItemIndex++; } } } %>
+                    <% } } } %>
                 </tbody>
             </table>
         </div>
@@ -171,17 +172,18 @@
                             <% if(m.getDescription() != null && !m.getDescription().trim().isEmpty()) { %>
                                 <span class="menu-desc"><%= m.getDescription() %></span>
                             <% } %>
+                            <input type="hidden" name="menuId_<%= m.getId() %>" value="<%= m.getId() %>">
                         </td>
                         <td><%= m.getPrice() %> 円</td>
                         <td>
                             <div class="qty-wrapper">
                                 <button type="button" class="btn-step dec-btn" <%= m.isAvailable() ? "" : "disabled" %>>-</button>
-                                <input type="number" name="quantity_<%= globalItemIndex %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
+                                <input type="number" name="quantity_<%= m.getId() %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
                                 <button type="button" class="btn-step inc-btn" <%= m.isAvailable() ? "" : "disabled" %>>+</button>
                             </div>
                         </td>
                     </tr>
-                    <% globalItemIndex++; } } } %>
+                    <% } } } %>
                 </tbody>
             </table>
         </div>
@@ -204,17 +206,18 @@
                             <% if(m.getDescription() != null && !m.getDescription().trim().isEmpty()) { %>
                                 <span class="menu-desc"><%= m.getDescription() %></span>
                             <% } %>
+                            <input type="hidden" name="menuId_<%= m.getId() %>" value="<%= m.getId() %>">
                         </td>
                         <td><%= m.getPrice() %> 円</td>
                         <td>
                             <div class="qty-wrapper">
                                 <button type="button" class="btn-step dec-btn" <%= m.isAvailable() ? "" : "disabled" %>>-</button>
-                                <input type="number" name="quantity_<%= globalItemIndex %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
+                                <input type="number" name="quantity_<%= m.getId() %>" class="qty-input" value="0" min="0" <%= m.isAvailable() ? "" : "disabled" %>>
                                 <button type="button" class="btn-step inc-btn" <%= m.isAvailable() ? "" : "disabled" %>>+</button>
                             </div>
                         </td>
                     </tr>
-                    <% globalItemIndex++; } } } %>
+                    <% } } } %>
                 </tbody>
             </table>
         </div>
@@ -228,12 +231,13 @@
                         <td>
                             <strong>幻の竜宮城特製パフェ（玉手箱付き）</strong>
                             <span class="menu-desc">開けると一気におじいさんガメになる、注文厳禁の禁断パフェ。</span>
+                            <input type="hidden" name="menuId_999" value="999">
                         </td>
                         <td>99,999 円</td>
                         <td>
                             <div class="qty-wrapper">
                                 <button type="button" class="btn-step dec-btn">-</button>
-                                <input type="number" name="quantity_<%= globalItemIndex %>" class="qty-input" value="0" min="0">
+                                <input type="number" name="quantity_999" class="qty-input" value="0" min="0">
                                 <button type="button" class="btn-step inc-btn">+</button>
                             </div>
                         </td>
@@ -266,18 +270,18 @@
         </div>
         
         <div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; text-align: left;">
-    		<label style="font-weight: bold; color: #00704A; display: block; margin-bottom: 8px;">👤 お客様の年齢層（客層分析用）:</label>
-    		<select name="ageGroup" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;">
-        		<option value="unknown">不明 / 未選択</option>
-        		<option value="kids">キッズ（12歳以下）</option>
-        		<option value="youth">学生・若者（10代〜20代前半）</option>
-        		<option value="adult">大人（20代後半〜50代）</option>
-        		<option value="senior">シニア（60歳以上）</option>
-    		</select>
-		</div>
+            <label style="font-weight: bold; color: #00704A; display: block; margin-bottom: 8px;">👤 お客様の年齢層（客層分析用）:</label>
+            <select name="ageGroup" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;">
+                <option value="unknown">不明 / 未選択</option>
+                <option value="kids">キッズ（12歳以下）</option>
+                <option value="youth">学生・若者（10代〜20代前半）</option>
+                <option value="adult">大人（20代後半〜50代）</option>
+                <option value="senior">シニア（60歳以上）</option>
+            </select>
+        </div>
         
         <input type="hidden" id="finalReceiptName" name="finalReceiptName" value="">
-        <button type="button" id="submitBtn" class="btn-submit">🐢 登録する 🐢</button>
+        <button type="submit" id="submitBtn" class="btn-submit">🐢 登録する 🐢</button>
     </form>
     
     <div class="footer-nav">
@@ -366,7 +370,7 @@
 
     document.querySelectorAll('.qty-wrapper').forEach(wrapper => {
         const input = wrapper.querySelector('.qty-input');
-        if (input.disabled) return; // 売り切れはスキップ
+        if (input.disabled) return;
         
         wrapper.querySelector('.inc-btn').addEventListener('click', () => {
             input.value = (parseInt(input.value) || 0) + 1;
@@ -418,7 +422,7 @@
         if (total === 0) {
             totalComment.textContent = "💬 なんか頼んでや…";
         } else if (total < 3000) {
-            totalComment.textContent = "💬 ええね、のんびりお茶しよか。";
+            totalComment.textContent = "💬 ええね、のんびりお茶しよか. ";
         } else if (total < 10000) {
             totalComment.textContent = "💬 結構頼んだなぁ！甲羅が重なりそうや。";
         } else {
@@ -448,29 +452,32 @@
         receiptGroup.style.display = needReceiptCheck.checked ? 'block' : 'none';
     });
 
-    document.getElementById('submitBtn').addEventListener('click', () => {
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
         const currentPrice = parseInt(priceDisplay.textContent.replace(/,/g, '')) || 0;
+        
         if (currentPrice === 0) {
+            e.preventDefault(); 
             alert('🐢「何も選ばれてへんで。のんびり選んでな」');
-            return;
+            return false;
         }
 
         if (needReceiptCheck.checked) {
             let nameInput = document.getElementById('receiptName').value.trim();
             if (!nameInput) {
+                e.preventDefault(); 
                 alert('🐢「領収書が必要なら、お名前を入れてな」');
-                return;
+                return false;
             }
             if (!nameInput.endsWith('ガメ') && !nameInput.endsWith('亀') && !nameInput.endsWith('かめ')) {
                 nameInput = nameInput + "ガメ";
             }
             document.getElementById('finalReceiptName').value = nameInput;
         }
-
-        document.getElementById('orderForm').submit();
+        
+        console.log("確定画面へいってらっしゃいカメ！🐢💨");
     });
 
-    // 🎰 カメガチャ（売り切れ商品は除外）
+    // 🎰 カメガチャ
     document.getElementById('gachaBtn').addEventListener('click', () => {
         const rows = document.querySelectorAll('.menu-row:not([data-category="secret"]):not(.sold-out-row)');
         if (rows.length === 0) {
