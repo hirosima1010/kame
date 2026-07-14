@@ -163,4 +163,53 @@ public class ShiftDAO {
         }
         return list;
     }
+ // 💡 損益画面連携用：指定された期間内に発生した全スタッフの「総人件費（時給×実働時間）」を計算する
+    public int getTotalLaborCost(java.sql.Date startDate, java.sql.Date endDate) {
+        int totalLaborCost = 0;
+        
+        // シフトデータとユーザーデータを結合し、指定期間内のデータを取得
+        String sql = "SELECT s.start_time, s.end_time, s.break_minutes, u.hourly_wage "
+                   + "FROM shifts s "
+                   + "JOIN users u ON s.username = u.username "
+                   + "WHERE s.work_date BETWEEN ? AND ?";
+
+        try (Connection conn = util.DBManager.getConnection();
+             PreparedStatement pStmt = conn.prepareStatement(sql)) {
+            
+            pStmt.setDate(1, startDate);
+            pStmt.setDate(2, endDate);
+            
+            try (ResultSet rs = pStmt.executeQuery()) {
+                while (rs.next()) {
+                    java.sql.Time startTime = rs.getTime("start_time");
+                    java.sql.Time endTime = rs.getTime("end_time");
+                    int breakMinutes = rs.getInt("break_minutes");
+                    int hourlyWage = rs.getInt("hourly_wage");
+                    
+                    if (startTime != null && endTime != null) {
+                        // ミリ秒単位で勤務時間を計算
+                        long diffMillis = endTime.getTime() - startTime.getTime();
+                        
+                        // 日またぎシフトの簡易考慮（終了が開始より前なら24時間足す）
+                        if (diffMillis <= 0) {
+                            diffMillis += 24 * 60 * 60 * 1000;
+                        }
+                        
+                        // 実働時間（分）＝ 総勤務時間（分） - 休憩（分）
+                        double workingMinutes = (diffMillis / (1000 * 60)) - breakMinutes;
+                        
+                        if (workingMinutes > 0) {
+                            double workingHours = workingMinutes / 60.0;
+                            // このシフト1件分の人件費を計算して加算
+                            totalLaborCost += (int) Math.round(workingHours * hourlyWage);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return totalLaborCost;
+    }
 }
