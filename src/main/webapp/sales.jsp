@@ -97,11 +97,11 @@
 
 <div class="container">
     <div class="header">
-        <h1>🐢 カメシステム売上ダッシュボード</h1>
+        <h1>🐢 売上ダッシュボード</h1>
         <div class="header-btns">
             <!-- 💡 plt統合：甲羅勘定（損益計算書）への素敵なジャンプ先 -->
             <!-- 💡 修正後：JSP直接ではなく、サーブレットURL（/pl）へ繋ぎ直すカメ！ -->
-			<a href="${pageContext.request.contextPath}/pl" class="btn btn-plt">📊 甲羅勘定(損益計算書)を見る</a>
+			<a href="${pageContext.request.contextPath}/pl" class="btn btn-plt">📊 損益計算書を見る</a>
             <a href="staff_main.jsp" class="btn btn-back">メインへ戻る</a>
         </div>
     </div>

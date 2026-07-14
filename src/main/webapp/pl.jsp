@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>甲羅勘定（損益計算書） | カフェシステムkame</title>
+<title>損益計算書 | カフェシステムkame</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
     body { font-family: 'Montserrat', 'Noto Sans JP', sans-serif; background-color: #f8f9fa; color: #333; margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
@@ -64,7 +64,7 @@
 %>
 
 <div class="container">
-    <h1>🐢 甲羅勘定（損益計算書）</h1>
+    <h1>🐢 損益計算書</h1>
     <div class="subtitle">Cafe Kame Financial Report</div>
 
     <!-- カメのリアルタイム経営評価 -->
@@ -89,19 +89,19 @@
                 <td class="price-col" style="color: #718096;">- ￥<%= String.format("%,d", costOfGoods) %></td>
             </tr>
             <tr class="row-gross">
-                <td>甲羅裏利益（売上総利益）</td>
+                <td>利益（売上総利益）</td>
                 <td class="price-col">￥<%= String.format("%,d", grossProfit) %></td>
             </tr>
             <tr>
-                <td style="color: #718096; padding-left: 15px;">┗ 働きガメへの給与（人件費）</td>
+                <td style="color: #718096; padding-left: 15px;">┗ 人件費</td>
                 <td class="price-col" style="color: #718096;">- ￥<%= String.format("%,d", laborCost) %></td>
             </tr>
             <tr>
-                <td style="color: #718096; padding-left: 15px;">┗ 巣の維持費（家賃・光熱費等経費）</td>
+                <td style="color: #718096; padding-left: 15px;">┗ 維持費（家賃・光熱費等経費）</td>
                 <td class="price-col" style="color: #718096;">- ￥<%= String.format("%,d", expenses) %></td>
             </tr>
             <tr class="row-net <%= netProfitClass %>">
-                <td>純カメ利益（営業利益）</td>
+                <td>純利益（営業利益）</td>
                 <td class="price-col">￥<%= String.format("%,d", netProfit) %></td>
             </tr>
         </tbody>

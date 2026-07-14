@@ -189,7 +189,7 @@
             <a href="${pageContext.request.contextPath}/pl" class="menu-card card-pl">
                 <div>
                     <div class="card-icon">💰</div>
-                    <div class="card-title">甲羅勘定（損益計算）</div>
+                    <div class="card-title">損益計算</div>
                     <div class="card-desc">売上原価や人件費などの固定経費を差し引いた、お店の純カメ利益を算出します。</div>
                 </div>
             </a>
@@ -198,7 +198,7 @@
     			<div>
         			<div class="card-icon">📦</div>
         			<div class="card-title">発注・仕入れ管理</div>
-        			<div class="card-desc">コーヒー豆やエサ代などの仕入れ原価を入力し、リアルタイム経費としてDBに計上します。</div>
+        			<div class="card-desc">コーヒー豆やお菓子などの仕入れ原価を入力し、リアルタイム経費としてDBに計上します。</div>
     			</div>
 			</a>
             
